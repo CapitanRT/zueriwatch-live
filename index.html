@@ -279,7 +279,6 @@ padding:60px 30px 100px;
 </form>
 
 <script>
-  let pilotSubmitting = false;
 function openPilot(){
   const o = document.getElementById('pilotOverlay');
   o.style.display='flex'; o.setAttribute('aria-hidden','false');
@@ -311,25 +310,88 @@ async function postToSheet(p){
   const j = await r.json().catch(()=>({ok:false}));
   if(!j.ok) throw new Error(j.error || "Send failed");
 }
+  let pilotSubmitting = false;
 async function submitPilot(){
-  hideMsgs();
-  const barname=document.getElementById('p_barname').value.trim();
-  const location=document.getElementById('p_location').value.trim();
-  const email=document.getElementById('p_email').value.trim();
-  const phone=document.getElementById('p_phone').value.trim();
-  const message=document.getElementById('p_message').value.trim();
+  if (pilotSubmitting) return;
 
-  if(!barname||!location||!email){
-    document.getElementById('p_err').classList.add('show');
+  hideMsgs();
+
+  const submitBtn = document.getElementById('p_submit');
+  const cancelBtn = document.getElementById('p_cancel');
+  const loadingMsg = document.getElementById('p_loading');
+  const okMsg = document.getElementById('p_ok');
+  const errMsg = document.getElementById('p_err');
+
+  const barname = document.getElementById('p_barname').value.trim();
+  const location = document.getElementById('p_location').value.trim();
+  const email = document.getElementById('p_email').value.trim();
+  const phone = document.getElementById('p_phone').value.trim();
+  const message = document.getElementById('p_message').value.trim();
+
+  if(!barname || !location || !email){
+    errMsg.textContent = '⚠️ Bitte Barname, Ort und E-Mail ausfüllen.';
+    errMsg.classList.add('show');
     return;
   }
 
+  pilotSubmitting = true;
+
+  submitBtn.disabled = true;
+  cancelBtn.disabled = true;
+  submitBtn.textContent = 'Wird gesendet…';
+  loadingMsg.classList.add('show');
+
   try{
-    await postToSheet({type:'pilot',barname,location,email,phone,region:'Zürich',pilot:'Ja',message});
-    document.getElementById('p_ok').classList.add('show');
-    setTimeout(()=>{closeAll();},900);
+    await postToSheet({
+      type:'pilot',
+      barname,
+      location,
+      email,
+      phone,
+      region:'Zürich',
+      pilot:'Ja',
+      message
+    });
+
+    loadingMsg.classList.remove('show');
+    okMsg.textContent = '✅ Danke! Deine Pilot-Anmeldung wurde erfolgreich gesendet.';
+    okMsg.classList.add('show');
+
+    // Felder sperren, damit niemand sofort nochmal klickt
+    ['p_barname','p_location','p_email','p_phone','p_message'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = true;
+    });
+
+    submitBtn.textContent = 'Erfolgreich gesendet';
+
+    setTimeout(() => {
+      closeAll();
+
+      // Formular zurücksetzen für den nächsten Besucher
+      ['p_barname','p_location','p_email','p_phone','p_message'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.disabled = false;
+          el.value = '';
+        }
+      });
+
+      submitBtn.disabled = false;
+      cancelBtn.disabled = false;
+      submitBtn.textContent = 'Pilot-Bar werden';
+      pilotSubmitting = false;
+    }, 1800);
+
   }catch(e){
-    document.getElementById('p_err').classList.add('show');
+    loadingMsg.classList.remove('show');
+    errMsg.textContent = '⚠️ Beim Absenden ist etwas schiefgelaufen. Bitte versuche es erneut.';
+    errMsg.classList.add('show');
+
+    submitBtn.disabled = false;
+    cancelBtn.disabled = false;
+    submitBtn.textContent = 'Erneut versuchen';
+    pilotSubmitting = false;
   }
 }
 async function submitContact(){
