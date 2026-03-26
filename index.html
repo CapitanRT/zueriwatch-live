@@ -228,12 +228,13 @@ padding:60px 30px 100px;
       <textarea id="p_message" placeholder="Habt ihr schon einen Launch-Termin? Welche Kosten entstehen?"></textarea>
 
       <div class="actions">
-        <button class="btn2" onclick="closeAll()">Abbrechen</button>
-        <button class="btn2 primary" onclick="submitPilot()">Senden</button>
-      </div>
+  <button class="btn2" id="p_cancel" onclick="closeAll()">Abbrechen</button>
+  <button class="btn2 primary" id="p_submit" onclick="submitPilot()">Pilot-Bar werden</button>
+</div>
 
-      <div class="msg" id="p_ok">✅ Danke! Eintrag wurde gesendet.</div>
-      <div class="msg err" id="p_err">⚠️ Bitte Barname, Ort und E-Mail ausfüllen.</div>
+<div class="msg" id="p_loading">⏳ Anmeldung wird gesendet, bitte kurz warten…</div>
+<div class="msg" id="p_ok">✅ Danke! Eintrag wurde gesendet.</div>
+<div class="msg err" id="p_err">⚠️ Bitte Barname, Ort und E-Mail ausfüllen.</div>
     </div>
   </div>
 </div>
