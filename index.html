@@ -295,7 +295,7 @@ function closeAll(){
   hideMsgs();
 }
 function hideMsgs(){
-  for(const id of ['p_ok','p_err','c_ok','c_err']){
+  for(const id of ['p_loading','p_ok','p_err','c_ok','c_err']){
     const el=document.getElementById(id);
     if(el) el.classList.remove('show');
   }
