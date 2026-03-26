@@ -279,6 +279,7 @@ padding:60px 30px 100px;
 </form>
 
 <script>
+  let pilotSubmitting = false;
 function openPilot(){
   const o = document.getElementById('pilotOverlay');
   o.style.display='flex'; o.setAttribute('aria-hidden','false');
